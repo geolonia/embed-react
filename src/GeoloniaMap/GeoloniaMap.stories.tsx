@@ -1,6 +1,6 @@
 import type { Map } from '@geolonia/embed';
 import { Meta } from '@storybook/react';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import GeoloniaMap from './GeoloniaMap';
 import './GeoloniaMap.stories.css';
 
@@ -108,7 +108,10 @@ export const CustomControls = () => {
   const [ word, setWord ] = useState('');
 
   const selectStation = useCallback((count: number) => {
-    const station = TokyoYamanoteLineStations.slice(count)[0];
+    const stationCount = TokyoYamanoteLineStations.length;
+    const mod = count % stationCount;
+    const index = mod < 0 ? mod + stationCount : mod;
+    const station = TokyoYamanoteLineStations[index];
     const center: [number, number] = [parseFloat(station[1]), parseFloat(station[2])];
     return center;
   }, []);
