@@ -157,10 +157,10 @@ export const CustomControls = () => {
         />
       </GeoloniaMap.Control>
 
-      {count !== 3 && <GeoloniaMap.Control position={'top-left'}>
+      <GeoloniaMap.Control position={'top-left'}>
         <button onClick={handleClockwiseControlAction} aria-label={'fly to next station'}>{'→'}</button>
         <button onClick={handleAntiClockwiseControlAction} aria-label={'fly to previous station'}>{'←'}</button>
-      </GeoloniaMap.Control>}
+      </GeoloniaMap.Control>
     </GeoloniaMap>
   );
 };
