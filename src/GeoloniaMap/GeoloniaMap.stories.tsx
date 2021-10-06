@@ -132,16 +132,20 @@ export const CustomControls = () => {
     }
   }, [selectStation, word]);
 
-  const handleClockwiseControlAction = useCallback(() => {
-    const center = selectStation(count + 1);
-    setCount((count) => (count + 1));
-    mapRef.current.flyTo({ center, zoom: 16 });
+  const handleClockwiseButtonClick = useCallback(() => {
+    if (mapRef.current) {
+      const center = selectStation(count + 1);
+      setCount((count) => (count + 1));
+      mapRef.current.flyTo({ center, zoom: 16 });
+    }
   }, [count, selectStation]);
 
-  const handleAntiClockwiseControlAction = useCallback(() => {
-    const center = selectStation(count - 1);
-    setCount((count) => count - 1);
-    mapRef.current.flyTo({ center, zoom: 16 });
+  const handleAntiClockwiseButtonClick = useCallback(() => {
+    if (mapRef.current) {
+      const center = selectStation(count - 1);
+      setCount((count) => count - 1);
+      mapRef.current.flyTo({ center, zoom: 16 });
+    }
   }, [count, selectStation]);
 
   return (
@@ -158,8 +162,8 @@ export const CustomControls = () => {
       </GeoloniaMap.Control>
 
       <GeoloniaMap.Control position={'top-left'}>
-        <button onClick={handleClockwiseControlAction} aria-label={'fly to next station'}>{'→'}</button>
-        <button onClick={handleAntiClockwiseControlAction} aria-label={'fly to previous station'}>{'←'}</button>
+        <button onClick={handleClockwiseButtonClick} aria-label={'fly to next station'}>{'→'}</button>
+        <button onClick={handleAntiClockwiseButtonClick} aria-label={'fly to previous station'}>{'←'}</button>
       </GeoloniaMap.Control>
     </GeoloniaMap>
   );

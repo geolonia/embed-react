@@ -169,9 +169,7 @@ const MapMarkerPortal: React.FC<MapMarkerPortalProps> = (props) => {
 
 export const GeoloniaMapContext = createContext<geolonia.Map | null>(null);
 
-type GeoloniaMapEmbedReact = React.FC<GeoloniaMapProps> & { Control: typeof Control }
-
-const GeoloniaMap: GeoloniaMapEmbedReact = (rawProps) => {
+const GeoloniaMap: React.FC<GeoloniaMapProps> & { Control: typeof Control } = (rawProps) => {
   const props: React.PropsWithChildren<GeoloniaMapProps> = {
     hash: 'off',
     marker: 'on',
