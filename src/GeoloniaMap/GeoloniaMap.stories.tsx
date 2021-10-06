@@ -1,6 +1,6 @@
 import type { Map } from '@geolonia/embed';
 import { Meta } from '@storybook/react';
-import React, { useCallback, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import GeoloniaMap from './GeoloniaMap';
 import './GeoloniaMap.stories.css';
 
@@ -101,6 +101,19 @@ export const AllControls = () => (
     グランフロント
   </GeoloniaMap>
 );
+
+export const CustomControls = () => {
+  const mapRef = useRef<Map | null>(null);
+  const handleSampleControlAction = useCallback(() => { alert('world'); }, []);
+
+  return (
+    <GeoloniaMap className="geolonia" mapRef={mapRef}>
+      <GeoloniaMap.Control position={'top-left'} mapRef={mapRef}>
+        <button onClick={handleSampleControlAction}>{'hello'}</button>
+      </GeoloniaMap.Control>
+    </GeoloniaMap>
+  );
+};
 
 export const GeoJSONWithSimpleStyle = () => (
   <GeoloniaMap

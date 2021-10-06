@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import ReactDOM from 'react-dom';
 import type geolonia from '@geolonia/embed';
 import type maplibregl from 'maplibre-gl';
+import { Control } from './Control';
 
 const camelCaseToSnakeCase = (input: string) => input.replace(/[A-Z]/g, (x) => `-${x.toLowerCase()}`);
 
@@ -166,7 +167,10 @@ const MapMarkerPortal: React.FC<MapMarkerPortalProps> = (props) => {
   }
 };
 
-const GeoloniaMap: React.FC<GeoloniaMapProps> = (rawProps) => {
+
+type GeoloniaMapExport = React.FC<GeoloniaMapProps> & { Control: typeof Control }
+
+const GeoloniaMap: GeoloniaMapExport = (rawProps) => {
   const props: React.PropsWithChildren<GeoloniaMapProps> = {
     hash: 'off',
     marker: 'on',
@@ -175,6 +179,19 @@ const GeoloniaMap: React.FC<GeoloniaMapProps> = (rawProps) => {
     mapStyle: 'geolonia/basic',
     ...rawProps,
   };
+
+  // <Control /> will be portalized with Control. Other will be passed as Popup content.
+  const children = props.children ? (Array.isArray(props.children) ? props.children : [props.children]) : [];
+  const [controlNodes, commonNodes] = children.reduce<[React.ReactElement[], React.ReactNode[]]>((prev, child) => {
+    if (React.isValidElement(child) && child.type === Control) {
+      prev[0].push(child);
+    } else {
+      prev[1].push(child);
+    }
+    return prev;
+  }, [[], []]);
+
+  // console.log(props.children.type === GeoloniaControl);
   const [ reloadSwitch, setReloadSwitch ] = useState(0);
   const [ internalMap, setInternalMap ] = useState<geolonia.Map | undefined>(undefined);
   const mapRef = useRef<geolonia.Map | null>(null);
@@ -267,10 +284,13 @@ const GeoloniaMap: React.FC<GeoloniaMapProps> = (rawProps) => {
         markerColor={props.markerColor}
         openPopup={props.openPopup}
       >
-        {props.children}
+        {commonNodes}
       </MapMarkerPortal>
     }
+    {controlNodes}
   </>);
 };
+
+GeoloniaMap.Control = Control;
 
 export default GeoloniaMap;
