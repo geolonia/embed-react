@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import type { IControl } from 'maplibre-gl';
 import type geolonia from '@geolonia/embed';
+import { GeoloniaMapContext } from './GeoloniaMap';
 
 type Props = {
   position?: 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
-  mapRef?: React.MutableRefObject<geolonia.Map | null>;
   onAdd?: IControl['onAdd'];
   onRemove?: IControl['onRemove'];
 }
@@ -16,40 +16,45 @@ interface IPortalControl extends IControl {
 
 export const Control: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const [portalControl, setPortalControl] = useState<IPortalControl | null> (null);
-  const { children, position, mapRef, onAdd, onRemove } = props;
+  const [controlContainer] = useState<HTMLElement>(document.createElement('div'));
+  const [portal, setPortal] = useState<React.ReactPortal | null>(null);
+  const map = useContext(GeoloniaMapContext);
+  const { children, position, onAdd, onRemove } = props;
+
+  // setup
+  useEffect(() => {
+    controlContainer.classList.add('mapboxgl-ctrl', 'mapboxgl-ctrl-group');
+  }, [controlContainer.classList]);
+
+  useEffect(() => {
+    setPortal(ReactDOM.createPortal(children, controlContainer));
+  }, [children, controlContainer]);
 
   useEffect(() => {
     const PortalControl = class implements IControl {
-      private container: HTMLDivElement = document.createElement('div')
       public portal: React.ReactPortal
-      constructor() {
-        this.container.classList.add('mapboxgl-ctrl');
-        this.portal = ReactDOM.createPortal(children, this.container);
-      }
       onAdd(map: geolonia.Map) {
-        if (onAdd) {
-          return onAdd(map);
-        } else {
-          return this.container;
-        }
+        return onAdd ? onAdd(map) : controlContainer;
       }
       onRemove(map: geolonia.Map) {
-        if (onRemove) {
-          onRemove(map);
-        }
+        onRemove && onRemove(map);
       }
     };
     setPortalControl(new PortalControl());
-  }, [children, onAdd, onRemove]);
+  }, [controlContainer, onAdd, onRemove]);
 
   useEffect(() => {
-    if (!mapRef || !mapRef.current) return;
-    mapRef.current.addControl(portalControl, position);
-  }, [portalControl, mapRef, position]);
+    if (!map) return;
+    map.addControl(portalControl, position);
+  }, [portalControl, map, position]);
 
-  return <>{portalControl?.portal}</>;
+  // cleanup
+  useEffect(() => () => {
+    map.removeControl(portalControl);
+    controlContainer.remove();
+  }, [controlContainer, map, portalControl]);
+
+  return <>{portal}</>;
 };
 
 export default Control;
-
-// TODO: remove control したい

@@ -25,36 +25,36 @@ export const SimpleMarker = () => (
   />
 );
 
-const TokyoYamanoteLineStations: [string, string, string][] = [
-  ['東京駅', '139.766103', '35.681391'],
-  ['有楽町駅', '139.763806', '35.675441'],
-  ['新橋駅', '139.758587', '35.666195'],
-  ['浜松町駅', '139.757135', '35.655391'],
-  ['田町駅', '139.747575', '35.645736'],
-  ['品川駅', '139.738999', '35.62876'],
-  ['大崎駅', '139.728439', '35.619772'],
-  ['五反田駅', '139.723822', '35.625974'],
-  ['目黒駅', '139.715775', '35.633923'],
-  ['恵比寿駅', '139.71007', '35.646685'],
-  ['渋谷駅', '139.701238', '35.658871'],
-  ['原宿駅', '139.702592', '35.670646'],
-  ['代々木駅', '139.702042', '35.683061'],
-  ['新宿駅', '139.700464', '35.689729'],
-  ['新大久保駅', '139.700261', '35.700875'],
-  ['高田馬場駅', '139.703715', '35.712677'],
-  ['目白駅', '139.706228', '35.720476'],
-  ['池袋駅', '139.711086', '35.730256'],
-  ['大塚駅', '139.728584', '35.731412'],
-  ['巣鴨駅', '139.739303', '35.733445'],
-  ['駒込駅', '139.748053', '35.736825'],
-  ['田端駅', '139.761229', '35.737781'],
-  ['西日暮里駅', '139.766857', '35.731954'],
-  ['日暮里駅', '139.771287', '35.727908'],
-  ['鶯谷駅', '139.778015', '35.721484'],
-  ['上野駅', '139.777043', '35.71379'],
-  ['御徒町駅', '139.774727', '35.707282'],
-  ['秋葉原駅', '139.773288', '35.698619'],
-  ['神田駅', '139.770641', '35.691173'],
+const TokyoYamanoteLineStations: [name: string, lng: string, lat: string, search: string][] = [
+  ['東京駅', '139.766103', '35.681391', 'tokyo'],
+  ['有楽町駅', '139.763806', '35.675441', 'yurakucyo'],
+  ['新橋駅', '139.758587', '35.666195', 'shinbashi'],
+  ['浜松町駅', '139.757135', '35.655391', 'hamamatsu'],
+  ['田町駅', '139.747575', '35.645736', 'tamachi'],
+  ['品川駅', '139.738999', '35.62876', 'shinagawa'],
+  ['大崎駅', '139.728439', '35.619772', 'osaki'],
+  ['五反田駅', '139.723822', '35.625974', 'gotanda'],
+  ['目黒駅', '139.715775', '35.633923', 'meguro'],
+  ['恵比寿駅', '139.71007', '35.646685', 'ebisu'],
+  ['渋谷駅', '139.701238', '35.658871', 'shibuya'],
+  ['原宿駅', '139.702592', '35.670646', 'harajyuku'],
+  ['代々木駅', '139.702042', '35.683061', 'yoyogi'],
+  ['新宿駅', '139.700464', '35.689729', 'shinjyuku'],
+  ['新大久保駅', '139.700261', '35.700875', 'shinokubo'],
+  ['高田馬場駅', '139.703715', '35.712677', 'takadanobaba'],
+  ['目白駅', '139.706228', '35.720476', 'mejiro'],
+  ['池袋駅', '139.711086', '35.730256', 'ikebukuro'],
+  ['大塚駅', '139.728584', '35.731412', 'otsuka'],
+  ['巣鴨駅', '139.739303', '35.733445', 'sugamo'],
+  ['駒込駅', '139.748053', '35.736825', 'komagome'],
+  ['田端駅', '139.761229', '35.737781', 'tabata'],
+  ['西日暮里駅', '139.766857', '35.731954', 'nishinippori'],
+  ['日暮里駅', '139.771287', '35.727908', 'nippori'],
+  ['鶯谷駅', '139.778015', '35.721484', 'uguisudani'],
+  ['上野駅', '139.777043', '35.71379', 'ueno'],
+  ['御徒町駅', '139.774727', '35.707282', 'okachimachi'],
+  ['秋葉原駅', '139.773288', '35.698619', 'akihabara'],
+  ['神田駅', '139.770641', '35.691173', 'kanda'],
 ];
 
 export const MarkerWithPopup = () => {
@@ -104,13 +104,63 @@ export const AllControls = () => (
 
 export const CustomControls = () => {
   const mapRef = useRef<Map | null>(null);
-  const handleSampleControlAction = useCallback(() => { alert('world'); }, []);
+  const [ count, setCount ] = useState(0);
+  const [ word, setWord ] = useState('');
+
+  const selectStation = useCallback((count: number) => {
+    const station = TokyoYamanoteLineStations.slice(count)[0];
+    const center: [number, number] = [parseFloat(station[1]), parseFloat(station[2])];
+    return center;
+  }, []);
+
+  const handleSeachWordChange: React.ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
+    setWord(event.target.value);
+  }, []);
+
+  const handleSearchEnter: React.KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
+    if (event.code === 'Enter') {
+      const stationIndex = TokyoYamanoteLineStations.findIndex((station) => {
+        const stationName = station[3].toUpperCase();
+        const pattern = word.toUpperCase();
+        return stationName.indexOf(pattern) !== -1;
+      });
+      if (stationIndex !== -1) {
+        const center = selectStation(stationIndex);
+        setCount(stationIndex);
+        mapRef.current.flyTo({ center, zoom: 16 });
+      }
+    }
+  }, [selectStation, word]);
+
+  const handleClockwiseControlAction = useCallback(() => {
+    const center = selectStation(count + 1);
+    setCount((count) => (count + 1));
+    mapRef.current.flyTo({ center, zoom: 16 });
+  }, [count, selectStation]);
+
+  const handleAntiClockwiseControlAction = useCallback(() => {
+    const center = selectStation(count - 1);
+    setCount((count) => count - 1);
+    mapRef.current.flyTo({ center, zoom: 16 });
+  }, [count, selectStation]);
 
   return (
     <GeoloniaMap className="geolonia" mapRef={mapRef}>
-      <GeoloniaMap.Control position={'top-left'} mapRef={mapRef}>
-        <button onClick={handleSampleControlAction}>{'hello'}</button>
+      <GeoloniaMap.Control position={'top-left'}>
+        <input
+          style={{width: 250}}
+          type="text"
+          placeholder="Yamanote Station Name? e.g. tokyo"
+          value={word}
+          onChange={handleSeachWordChange}
+          onKeyPress={handleSearchEnter}
+        />
       </GeoloniaMap.Control>
+
+      {count !== 3 && <GeoloniaMap.Control position={'top-left'}>
+        <button onClick={handleClockwiseControlAction} aria-label={'fly to next station'}>{'→'}</button>
+        <button onClick={handleAntiClockwiseControlAction} aria-label={'fly to previous station'}>{'←'}</button>
+      </GeoloniaMap.Control>}
     </GeoloniaMap>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, createContext } from 'react';
 import ReactDOM from 'react-dom';
 import type geolonia from '@geolonia/embed';
 import type maplibregl from 'maplibre-gl';
@@ -167,10 +167,11 @@ const MapMarkerPortal: React.FC<MapMarkerPortalProps> = (props) => {
   }
 };
 
+export const GeoloniaMapContext = createContext<geolonia.Map | null>(null);
 
-type GeoloniaMapExport = React.FC<GeoloniaMapProps> & { Control: typeof Control }
+type GeoloniaMapEmbedReact = React.FC<GeoloniaMapProps> & { Control: typeof Control }
 
-const GeoloniaMap: GeoloniaMapExport = (rawProps) => {
+const GeoloniaMap: GeoloniaMapEmbedReact = (rawProps) => {
   const props: React.PropsWithChildren<GeoloniaMapProps> = {
     hash: 'off',
     marker: 'on',
@@ -180,7 +181,8 @@ const GeoloniaMap: GeoloniaMapExport = (rawProps) => {
     ...rawProps,
   };
 
-  // <Control /> will be portalized with Control. Other will be passed as Popup content.
+  // A <Control /> node will be portalized with its container HTMLElement.
+  // Others will be passed as Popup contents.
   const children = props.children ? (Array.isArray(props.children) ? props.children : [props.children]) : [];
   const [controlNodes, commonNodes] = children.reduce<[React.ReactElement[], React.ReactNode[]]>((prev, child) => {
     if (React.isValidElement(child) && child.type === Control) {
@@ -287,7 +289,7 @@ const GeoloniaMap: GeoloniaMapExport = (rawProps) => {
         {commonNodes}
       </MapMarkerPortal>
     }
-    {controlNodes}
+    {internalMap && <GeoloniaMapContext.Provider value={internalMap}>{controlNodes}</GeoloniaMapContext.Provider>}
   </>);
 };
 
