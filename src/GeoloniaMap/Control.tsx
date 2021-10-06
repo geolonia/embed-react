@@ -17,7 +17,6 @@ interface IPortalControl extends IControl {
 export const Control: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const [portalControl, setPortalControl] = useState<IPortalControl | null> (null);
   const [controlContainer] = useState<HTMLElement>(document.createElement('div'));
-  const [portal, setPortal] = useState<React.ReactPortal | null>(null);
   const map = useContext(GeoloniaMapContext);
   const { children, position, onAdd, onRemove } = props;
 
@@ -25,10 +24,6 @@ export const Control: React.FC<React.PropsWithChildren<Props>> = (props) => {
   useEffect(() => {
     controlContainer.classList.add('mapboxgl-ctrl', 'mapboxgl-ctrl-group');
   }, [controlContainer.classList]);
-
-  useEffect(() => {
-    setPortal(ReactDOM.createPortal(children, controlContainer));
-  }, [children, controlContainer]);
 
   useEffect(() => {
     const PortalControl = class implements IControl {
@@ -54,7 +49,7 @@ export const Control: React.FC<React.PropsWithChildren<Props>> = (props) => {
     controlContainer.remove();
   }, [controlContainer, map, portalControl]);
 
-  return <>{portal}</>;
+  return controlContainer && ReactDOM.createPortal(children, controlContainer);
 };
 
 export default Control;
