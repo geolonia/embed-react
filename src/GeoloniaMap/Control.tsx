@@ -17,7 +17,7 @@ type Props = {
   /** Picked HTMLDivElement attributes for container element of the control */
   containerProps?: {
 
-    /** Class attribute values for the container element. Please refer below for the embed class names.
+    /** Class attribute values for the container element. If you want to use the embed class names such as `maplibregl-ctrl` or `mapboxgl-ctrl`, please refer the link below.
      *  https://github.com/maplibre/maplibre-gl-js/search?l=CSS&q=maplibregl-ctrl&type=code
      */
     className?: React.HTMLAttributes<HTMLDivElement>['className'];
