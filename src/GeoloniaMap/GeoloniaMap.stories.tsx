@@ -1,6 +1,6 @@
 import type { Map } from '@geolonia/embed';
 import { Meta } from '@storybook/react';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import GeoloniaMap from './GeoloniaMap';
 import './GeoloniaMap.stories.css';
 
@@ -112,8 +112,9 @@ export const CustomControls = () => {
     const mod = count % stationCount;
     const index = mod < 0 ? mod + stationCount : mod;
     const station = TokyoYamanoteLineStations[index];
-    const center: [number, number] = [parseFloat(station[1]), parseFloat(station[2])];
-    return center;
+    const name = station[0];
+    const center: [string, string] = [station[1], station[2]];
+    return { name, center };
   }, []);
 
   const handleSeachWordChange: React.ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
@@ -128,32 +129,26 @@ export const CustomControls = () => {
         return stationName.indexOf(pattern) !== -1;
       });
       if (stationIndex !== -1) {
-        const center = selectStation(stationIndex);
         setCount(stationIndex);
-        mapRef.current.flyTo({ center, zoom: 16 });
       }
     }
-  }, [selectStation, word]);
+  }, [word]);
 
-  const handleClockwiseButtonClick = useCallback(() => {
-    if (mapRef.current) {
-      const center = selectStation(count + 1);
-      setCount((count) => (count + 1));
-      mapRef.current.flyTo({ center, zoom: 16 });
-    }
-  }, [count, selectStation]);
+  const handleClockwiseButtonClick = useCallback(() => { setCount((count) => (count + 1)); }, []);
+  const handleAntiClockwiseButtonClick = useCallback(() => { setCount((count) => count - 1); }, []);
 
-  const handleAntiClockwiseButtonClick = useCallback(() => {
-    if (mapRef.current) {
-      const center = selectStation(count - 1);
-      setCount((count) => count - 1);
-      mapRef.current.flyTo({ center, zoom: 16 });
-    }
-  }, [count, selectStation]);
+  const station = selectStation(count);
 
   return (
-    <GeoloniaMap className="geolonia" mapRef={mapRef}>
-      <GeoloniaMap.Control position={'top-left'}>
+    <GeoloniaMap
+      lng={station.center[0]}
+      lat={station.center[1]}
+      zoom={'16'}
+      className="geolonia" mapRef={mapRef}>
+      <GeoloniaMap.Control
+        position={'top-left'}
+        containerProps={ { className: 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group' } }
+      >
         <input
           style={{width: 250}}
           type="text"
@@ -164,10 +159,21 @@ export const CustomControls = () => {
         />
       </GeoloniaMap.Control>
 
-      <GeoloniaMap.Control position={'top-left'}>
+      <GeoloniaMap.Control
+        position={'top-left'}
+        containerProps={ { className: 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group' } }
+      >
         <button onClick={handleClockwiseButtonClick} aria-label={'fly to next station'}>{'→'}</button>
         <button onClick={handleAntiClockwiseButtonClick} aria-label={'fly to previous station'}>{'←'}</button>
       </GeoloniaMap.Control>
+      <GeoloniaMap.Control
+        position={'bottom-left'}
+        containerProps={ { className: 'mapboxgl-ctrl maplibregl-ctrl mapboxgl-ctrl-attrib maplibregl-ctrl-attrib' } }
+      >
+        <span>{`current station: ${station.name}`}</span>
+      </GeoloniaMap.Control>
+
+      <p>{station.name}</p>
     </GeoloniaMap>
   );
 };
