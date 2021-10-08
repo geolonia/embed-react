@@ -8,17 +8,17 @@
 
 ## インストール
 
-```
+```shell
 npm install --save @geolonia/embed-react
 ```
 
-```
+```shell
 yarn add @geolonia/embed-react
 ```
 
 ## 使い方
 
-```
+```jsx
 import { GeoloniaMap } from '@geolonia/embed-react';
 
 const Page = () => {
@@ -49,6 +49,31 @@ Embed API は `data-*` アトリビュートで引数を渡していますが、
 | `data-3d="on"`  | `render3d="on"` |
 
 `embed-react` は使用するコンポーネントがマウントされる時に Embed API の JavaScript が読み込まれているかを確認し、読み込まれていない場合は動的に追加します。もしサイトのほとんどのページに Geolonia Maps 地図を埋め込む場合は、テンプレートの `index.html` に埋め込むことをおすすめします。[サンプルを確認する](https://github.com/geolonia/maps.geolonia.com/blob/4e431e466db71af7b4181129b3a8408ae91cd028/public/index.html#L26)
+
+## カスタムコントロールを追加する
+
+`<GeoloniaMap.Control />` を使うと、独自の[コントロール](https://maplibre.org/maplibre-gl-js-docs/api/markers/#icontrol)を地図に追加することができます。
+
+```jsx
+import { GeoloniaMap } from '@geolonia/embed-react';
+
+const Page = () => {
+  return <>
+    <GeoloniaMap style={{height: "200px", width: "100%"}}>
+      <GeoloniaMap.Control containerProps={ { className: 'maplibregl-ctrl' } }>
+        <button>{'ボタン'}</button>
+      </GeoloniaMap.Control>
+    </GeoloniaMap>
+  </>
+}
+```
+
+| props | type |
+| ===== | ==== |
+| position? | `"top-left" | "top-right" | "bottom-right" | "bottom-left"` |
+| onAdd? | `maplibregl.IControl['onAdd']` |
+| onRemove? | `maplibregl.IControl['onRemove']` |
+| containerProps? | `{ className?: string }` |
 
 ## 注意
 
