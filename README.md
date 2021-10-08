@@ -69,8 +69,8 @@ const Page = () => {
 ```
 
 | props | type |
-| ===== | ==== |
-| position? | `"top-left" | "top-right" | "bottom-right" | "bottom-left"` |
+| --------------- | ----------------------- |
+| position? | `"top-left" \| "top-right" \| "bottom-right" \| "bottom-left"` |
 | onAdd? | `maplibregl.IControl['onAdd']` |
 | onRemove? | `maplibregl.IControl['onRemove']` |
 | containerProps? | `{ className?: string }` |
