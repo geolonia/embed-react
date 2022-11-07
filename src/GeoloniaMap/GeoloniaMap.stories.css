@@ -2,3 +2,22 @@
   height: 90vh;
   width: 100%;
 }
+
+.flex {
+  display: flex;
+}
+
+.sidebar {
+  height: 90vh;
+  width: 20%;
+}
+
+.sidebar > * {
+  display: block;
+  margin: 1em;
+}
+
+.geolonia-80 {
+  height: 90vh;
+  width: 80%;
+}

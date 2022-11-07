@@ -1,6 +1,6 @@
 import type { Map } from '@geolonia/embed';
 import { Meta } from '@storybook/react';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import GeoloniaMap from './GeoloniaMap';
 import './GeoloniaMap.stories.css';
 
@@ -103,78 +103,60 @@ export const AllControls = () => (
 );
 
 export const CustomControls = () => {
-  const mapRef = useRef<Map | null>(null);
-  const [ count, setCount ] = useState(0);
-  const [ word, setWord ] = useState('');
 
-  const selectStation = useCallback((count: number) => {
-    const stationCount = TokyoYamanoteLineStations.length;
-    const mod = count % stationCount;
-    const index = mod < 0 ? mod + stationCount : mod;
-    const station = TokyoYamanoteLineStations[index];
-    const name = station[0];
-    const center: [string, string] = [station[1], station[2]];
-    return { name, center };
-  }, []);
+  type ControlTemplate = {
+    type: 'button' | 'text' | 'select' | 'label'
+    position: 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left'
+  }
 
-  const handleSeachWordChange: React.ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
-    setWord(event.target.value);
-  }, []);
+  const [controls, setControls] = useState<ControlTemplate[]>([]);
+  const types = ['button', 'text', 'label'];
+  const positions = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
 
-  const handleSearchEnter: React.KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
-    if (event.code === 'Enter') {
-      const stationIndex = TokyoYamanoteLineStations.findIndex((station) => {
-        const stationName = station[3].toUpperCase();
-        const pattern = word.toUpperCase();
-        return stationName.indexOf(pattern) !== -1;
-      });
-      if (stationIndex !== -1) {
-        setCount(stationIndex);
-      }
-    }
-  }, [word]);
-
-  const handleClockwiseButtonClick = useCallback(() => { setCount((count) => (count + 1)); }, []);
-  const handleAntiClockwiseButtonClick = useCallback(() => { setCount((count) => count - 1); }, []);
-
-  const station = selectStation(count);
+  const handleAppendControl = useCallback(() => {
+    const control = {
+      type: (document.getElementById('select-type') as HTMLSelectElement).value,
+      position: (document.getElementById('select-position') as HTMLSelectElement).value,
+    } as ControlTemplate;
+    setControls([...controls, control]);
+  }, [controls]);
 
   return (
-    <GeoloniaMap
-      lng={station.center[0]}
-      lat={station.center[1]}
-      zoom={'16'}
-      className="geolonia" mapRef={mapRef}>
-      <GeoloniaMap.Control
-        position={'top-left'}
-        containerProps={ { className: 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group' } }
-      >
-        <input
-          style={{width: 250}}
-          type="text"
-          placeholder="Yamanote Station Name? e.g. tokyo"
-          value={word}
-          onChange={handleSeachWordChange}
-          onKeyPress={handleSearchEnter}
-        />
-      </GeoloniaMap.Control>
+    <div className="flex">
 
-      <GeoloniaMap.Control
-        position={'top-left'}
-        containerProps={ { className: 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group' } }
-      >
-        <button onClick={handleClockwiseButtonClick} aria-label={'fly to next station'}>{'→'}</button>
-        <button onClick={handleAntiClockwiseButtonClick} aria-label={'fly to previous station'}>{'←'}</button>
-      </GeoloniaMap.Control>
-      <GeoloniaMap.Control
-        position={'bottom-left'}
-        containerProps={ { className: 'mapboxgl-ctrl maplibregl-ctrl mapboxgl-ctrl-attrib maplibregl-ctrl-attrib' } }
-      >
-        <span>{`current station: ${station.name}`}</span>
-      </GeoloniaMap.Control>
+      <form className="sidebar">
+        <select name="control-type" id="select-type">
+          {types.map((type) => <option key={type} value={type}>{type}</option>)}
+        </select>
+        <select name="position" id="select-position">
+          {
+            positions.map((position) => <option key={position} value={position}>{position}</option>)
+          }
+        </select>
+        <button type={'button'} onClick={handleAppendControl}>{'コントロールを追加'}</button>
+      </form>
 
-      <p>{station.name}</p>
-    </GeoloniaMap>
+      <GeoloniaMap
+        lng={TokyoYamanoteLineStations[0][1]}
+        lat={TokyoYamanoteLineStations[0][2]}
+        zoom={'16'}
+        className="geolonia-80"
+        marker={'off'}
+      >
+        {controls.map((control, i) => <GeoloniaMap.Control
+          key={i}
+          position={control.position}
+          containerProps={ { className: 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group' } }
+        >
+          {
+            control.type === 'button' ? <button>{`${i + 1}`}</button> :
+              control.type === 'label' ? <span>{`Hello ${i + 1}`}</span> :
+                control.type === 'text' ? <input type="text" placeholder={`Hello ${i + 1}`} /> : null
+          }
+        </GeoloniaMap.Control>)}
+
+      </GeoloniaMap>
+    </div>
   );
 };
 
