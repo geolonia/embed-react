@@ -46,7 +46,7 @@ export const Control: React.FC<React.PropsWithChildren<Props>> = (props) => {
 
   useEffect(() => {
     const PortalControl = class implements IControl {
-      public portal: React.ReactPortal
+      public portal: React.ReactPortal;
       onAdd(map: geolonia.Map) {
         return onAdd ? onAdd(map) : controlContainer;
       }
