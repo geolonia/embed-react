@@ -71,7 +71,7 @@ type GeoloniaMapProps = {
    */
   apiKey?: string;
 
-  initOptions?: Omit<maplibregl.MapboxOptions, 'container'>;
+  initOptions?: Omit<maplibregl.MapOptions, 'container'>;
 } & EmbedAttributes;
 
 const DEFAULT_API_KEY = 'YOUR-API-KEY';
@@ -133,7 +133,7 @@ type MapMarkerPortalProps = {
 }
 
 // TODO: Expose this so users can set multiple markers.
-const MapMarkerPortal: React.FC<MapMarkerPortalProps> = (props) => {
+const MapMarkerPortal: React.FC<React.PropsWithChildren<MapMarkerPortalProps>> = (props) => {
   const wrapperElement = useMemo(() => document.createElement('div'), []);
   const { map, lat, lng, markerColor, openPopup } = props;
 
@@ -185,7 +185,7 @@ const _filterBoundProps: (props: React.PropsWithChildren<GeoloniaMapProps>) => R
 
 export const GeoloniaMapContext = createContext<geolonia.Map | null>(null);
 
-const GeoloniaMap: React.FC<GeoloniaMapProps> & { Control: typeof Control } = (rawProps) => {
+const GeoloniaMap: React.FC< React.PropsWithChildren<GeoloniaMapProps>> & { Control: typeof Control } = (rawProps) => {
   const props: React.PropsWithChildren<GeoloniaMapProps> = useMemo(() => ({
     hash: 'off',
     marker: 'on',
