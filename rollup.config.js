@@ -23,7 +23,10 @@ const config = {
     peerDepsExternal(),
     resolve({ browser: true }),
     commonjs(),
-    typescript({ useTsconfigDeclarationDir: true }),
+    typescript({
+      useTsconfigDeclarationDir: true,
+      tsconfig: './tsconfig.dist.json',
+    }),
   ],
 };
 export default config;

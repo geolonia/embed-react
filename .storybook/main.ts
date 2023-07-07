@@ -1,14 +1,23 @@
-import path  from "path";
-import { StorybookConfig } from '@storybook/react-webpack5'
-
+import path from "path";
+import { StorybookConfig } from '@storybook/react-webpack5';
 const config: StorybookConfig = {
   framework: {
     name: "@storybook/react-webpack5",
     options: {}
   },
   stories: ["../src/**/*.stories.tsx"],
+  typescript: {
+    // skipBabel: true
+  },
   // Add any Storybook addons you want here: https://storybook.js.org/addons/
   addons: [
+    {
+      name: '@storybook/addon-essentials',
+      options: {
+        actions: false,
+        controls: false,
+      }
+    },
     {
       name: '@storybook/addon-storysource',
       options: {
@@ -23,27 +32,29 @@ const config: StorybookConfig = {
         }
       }
     },
-    "@storybook/addon-mdx-gfm",
+    // "@storybook/addon-mdx-gfm"
   ],
-  webpackFinal: async config => {
-    config.module?.rules?.push({
-      test: /\.scss$/,
-      use: ["style-loader", "css-loader", "sass-loader"],
-      include: path.resolve(__dirname, "../")
-    });
-    config.module?.rules?.push({
-      test: /\.(ts|tsx)$/,
-      loader: require.resolve("babel-loader"),
-      options: {
-        presets: [["react-app", {
-          flow: false,
-          typescript: true
-        }]]
-      }
-    });
-    config.resolve?.extensions?.push(".ts", ".tsx");
-    return config;
-  },
+  // webpackFinal: async config => {
+  //   config.module?.rules?.push({
+  //     test: /\.scss$/,
+  //     use: ["style-loader", "css-loader", "sass-loader"],
+  //     include: path.resolve(__dirname, "../")
+  //   });
+  //   config.module?.rules?.push({
+  //     test: /\.(ts|tsx)$/,
+  //     loader: require.resolve("babel-loader"),
+  //     options: {
+  //       presets: [["react-app", {
+  //         flow: false,
+  //         typescript: true
+  //       }]]
+  //     }
+  //   });
+  //   config.resolve?.extensions?.push(".ts", ".tsx");
+  //   return config;
+  // },
+  docs: {
+    autodocs: true
+  }
 };
-
-export default config
+export default config;

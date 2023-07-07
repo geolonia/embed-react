@@ -15,10 +15,20 @@ module.exports = {
       version: 'detect'
     }
   },
-  overrides: [{
-    files: ['**/*.tsx'],
-    rules: {
-      'react/prop-types': 'off'
+  overrides: [
+    {
+      files: ['**/*.tsx'],
+      rules: {
+        'react/prop-types': 'off',
+      }
+    },
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      parserOptions: {
+        project: [
+          './tsconfig.json',
+        ]
+      }
     }
-  }]
+  ]
 };
