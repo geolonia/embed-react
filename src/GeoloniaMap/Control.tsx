@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import type { IControl } from 'maplibre-gl';
 import type geolonia from '@geolonia/embed';
-import { GeoloniaMapContext } from './GeoloniaMap';
+import { GeoloniaMapContext } from './Context';
 
 type Props = {
   /** where to put the control */
@@ -22,7 +22,7 @@ type Props = {
      */
     className?: React.HTMLAttributes<HTMLDivElement>['className'];
   };
-}
+};
 
 interface IPortalControl extends IControl {
   portal: React.ReactPortal;

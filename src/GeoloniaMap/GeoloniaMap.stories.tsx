@@ -4,9 +4,11 @@ import React, { useCallback, useLayoutEffect, useState } from 'react';
 import GeoloniaMap from './GeoloniaMap';
 import './GeoloniaMap.stories.css';
 
-export default {
+const storybookMeta: Meta = {
   title: 'GeoloniaMap',
-} as Meta;
+};
+
+export default storybookMeta;
 
 export const Defaults = () => (
   <GeoloniaMap
@@ -107,7 +109,7 @@ export const CustomControls = () => {
   type ControlTemplate = {
     type: 'button' | 'text' | 'select' | 'label'
     position: 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left'
-  }
+  };
 
   const [controls, setControls] = useState<ControlTemplate[]>([]);
   const types = ['button', 'text', 'label'];

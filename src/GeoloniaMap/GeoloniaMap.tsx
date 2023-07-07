@@ -1,9 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, createContext } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import type geolonia from '@geolonia/embed';
 import type maplibregl from 'maplibre-gl';
 import deepEqual from 'deep-equal';
 import { Control } from './Control';
+import { GeoloniaMapContext } from './Context';
 
 const camelCaseToSnakeCase = (input: string) => input.replace(/[A-Z]/g, (x) => `-${x.toLowerCase()}`);
 
@@ -130,7 +131,7 @@ type MapMarkerPortalProps = {
 
   markerColor: string
   openPopup: string
-}
+};
 
 // TODO: Expose this so users can set multiple markers.
 const MapMarkerPortal: React.FC<React.PropsWithChildren<MapMarkerPortalProps>> = (props) => {
@@ -182,8 +183,6 @@ const _filterBoundProps: (props: React.PropsWithChildren<GeoloniaMapProps>) => R
     markerColor: undefined,
   };
 };
-
-export const GeoloniaMapContext = createContext<geolonia.Map | null>(null);
 
 const GeoloniaMap: React.FC< React.PropsWithChildren<GeoloniaMapProps>> & { Control: typeof Control } = (rawProps) => {
   const props: React.PropsWithChildren<GeoloniaMapProps> = useMemo(() => ({
