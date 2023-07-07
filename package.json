@@ -9,7 +9,7 @@
     "dist/**/*"
   ],
   "repository": "https://github.com/geolonia/embed-react",
-  "author": "Geolonia Dev Team <dev@geolonia.com>",
+  "author": "Geolonia (https://geolonia.com)",
   "license": "MIT",
   "private": false,
   "scripts": {
